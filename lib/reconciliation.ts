@@ -88,7 +88,7 @@ export function parseLusioCSV(csvText: string): LusioClient[] {
   })).filter(client => client.servicePaymentReferenceId) // Remove empty rows
 }
 
-// Reconcile payments
+// Reconcile payments with fallback by email
 export function reconcilePayments(
   stripePayments: StripePayment[],
   lusioClients: LusioClient[]
@@ -99,18 +99,38 @@ export function reconcilePayments(
   const matched: MatchedPayment[] = []
   const unmatched: UnmatchedPayment[] = []
 
-  // Create a lookup map for Lusio clients
-  const lusioMap = new Map<string, LusioClient>()
+  // Create two lookup maps for Lusio clients
+  // 1. By Payment Intent ID (primary)
+  const lusioByPaymentId = new Map<string, LusioClient>()
+  // 2. By Email (fallback)
+  const lusioByEmail = new Map<string, LusioClient>()
+
   lusioClients.forEach(client => {
-    lusioMap.set(client.servicePaymentReferenceId, client)
+    // Add to payment ID map (if exists)
+    if (client.servicePaymentReferenceId) {
+      lusioByPaymentId.set(client.servicePaymentReferenceId, client)
+    }
+    // Add to email map (normalized to lowercase)
+    if (client.personEmail) {
+      lusioByEmail.set(client.personEmail.toLowerCase().trim(), client)
+    }
   })
 
   // Match each Stripe payment with Lusio client
   stripePayments.forEach(payment => {
-    const client = lusioMap.get(payment.paymentIntentId)
+    let client: LusioClient | undefined
+
+    // STEP 1: Try to match by Payment Intent ID (primary)
+    client = lusioByPaymentId.get(payment.paymentIntentId)
+
+    // STEP 2: If not found, try to match by email (fallback)
+    if (!client && payment.customerEmail) {
+      const normalizedEmail = payment.customerEmail.toLowerCase().trim()
+      client = lusioByEmail.get(normalizedEmail)
+    }
 
     if (client) {
-      // Match found
+      // Match found (either by Payment ID or Email)
       matched.push({
         date: payment.createdDate,
         amount: payment.amount,
@@ -121,7 +141,7 @@ export function reconcilePayments(
         address: `${client.addressStreet} ${client.addressPostalCode} ${client.addressLocality}`.trim(),
       })
     } else {
-      // No match found
+      // No match found (neither by Payment ID nor Email)
       unmatched.push({
         date: payment.createdDate,
         amount: payment.amount,

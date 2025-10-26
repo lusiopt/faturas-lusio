@@ -4,6 +4,20 @@
 
 ---
 
+## [1.0.0] - 2025-10-26
+
+### 🎉 Primeira Versão Completa
+- ✅ Interface de upload de arquivos CSV (Stripe e Lusio)
+- ✅ Parser CSV do Stripe (comma-delimited)
+- ✅ Parser CSV do Lusio (semicolon-delimited)
+- ✅ Lógica de reconciliação via Payment Intent ID
+- ✅ Visualização de resultados (correspondidos e não correspondidos)
+- ✅ Exportação para Excel com tabs mensais
+- ✅ Design responsivo com Tailwind CSS
+- ✅ Build estático Next.js com export
+- ✅ Deploy em dev.lusio.market/faturas
+- 📝 Documentação completa no README.md
+
 ## [0.1.0] - 2025-10-26
 
 ### Criação Inicial

@@ -46,35 +46,87 @@ Sistema web para cruzamento automático de pagamentos extraídos do Stripe (CSV)
 
 ---
 
-## 📊 ESTRUTURA DE DADOS
+## 📊 ESTRUTURA DE DADOS (ESPECIFICAÇÃO FINAL)
 
 ### CSV Stripe (Input)
+**Delimitador:** `,` (vírgula)
+**Campos relevantes:**
+- `PaymentIntent ID` - **CAMPO CHAVE** 🔑 (ex: `pi_3SMECgAHUiwjWkzO1AnNvIU4`)
+- `Created date (UTC)` - Data e hora do pagamento
+- `Amount` - Valor (formato: `"399,00"`)
+- `Fee` - Taxa Stripe
+- `Customer Email` - Email do cliente
+
+**Exemplo:**
 ```csv
-id,customer_id,amount,status,created,description
-ch_xxx,cus_xxx,1997,succeeded,2025-10-26,Payment for subscription
+id,Created date (UTC),Amount,Fee,PaymentIntent ID,Customer Email
+py_3SME...,2025-10-25 20:37:16,"399,00","20,31",pi_3SMECgAHUiwjWkzO1AnNvIU4,email@example.com
 ```
 
-**Campos importantes:**
-- `id` - ID do pagamento Stripe
-- `customer_id` - ID do cliente no Stripe (campo comum?)
-- `amount` - Valor pago
-- `status` - Status do pagamento
-- `created` - Data de criação
+---
 
-### Excel Lusio (Input)
-```
-ID Cliente | Nome | Email | Telefone | Status
-12345      | João | joao@email.com | +351... | Ativo
+### CSV Lusio (Input)
+**Delimitador:** `;` (ponto-e-vírgula)
+**Campos relevantes:**
+- `service_payment_reference_id` - **CAMPO CHAVE** 🔑 (ex: `pi_3RtDfgAHUiwjWkzO22qAMw0p`)
+- `person_first_name` - Primeiro nome da pessoa
+- `person_last_name` - Sobrenome da pessoa
+- `person_email` - Email da pessoa
+- `person_nif` - NIF da pessoa
+- `address_street` - Rua
+- `address_postal_code` - Código postal
+- `address_locality` - Localidade
+
+**Exemplo:**
+```csv
+service_id;service_payment_reference_id;person_first_name;person_last_name;person_email;person_nif;address_street;address_postal_code;address_locality
+ea327b78...;pi_3RtDfgAHUiwjWkzO22qAMw0p;Shirley;Targino;email@example.com;303167807;Rua X 148;3045-481;Coimbra
 ```
 
-**Campo comum:** ID Cliente (a confirmar formato exato)
+---
 
-### Output (Relatório Reconciliado)
+### 🔗 LÓGICA DE RECONCILIAÇÃO
+
+```javascript
+Stripe.PaymentIntent ID === Lusio.service_payment_reference_id
 ```
-ID Stripe | ID Lusio | Nome Cliente | Valor | Status | Match
-ch_xxx    | 12345    | João Silva   | €19.97| OK     | ✅
-ch_yyy    | -        | -            | €39.97| ERROR  | ❌
-```
+
+---
+
+### Excel Output (Formato mensal)
+
+**Estrutura:** Uma aba por mês (ex: Set-25, Out-24, etc)
+**Headers (linha 3):**
+
+| Data | Valor | Taxa Stripe | Nome Cliente | Email | NIF | Morada |
+|------|-------|-------------|--------------|-------|-----|--------|
+| 2025-09-30 | 399 | 20.31 | Shirley Targino | email@example.com | 303167807 | Rua X 148 3045-481 Coimbra |
+
+**Mapeamento de campos:**
+
+| Coluna Output | Fonte | Campo Original | Transformação |
+|---------------|-------|----------------|---------------|
+| **Data** | Stripe | `Created date (UTC)` | Extrair apenas data (sem hora) |
+| **Valor** | Stripe | `Amount` | Remover vírgula, converter para número |
+| **Taxa Stripe** | Stripe | `Fee` | Remover vírgula, converter para número |
+| **Nome Cliente** | Lusio | `person_first_name` + `person_last_name` | Concatenar com espaço |
+| **Email** | Lusio | `person_email` | - |
+| **NIF** | Lusio | `person_nif` | - |
+| **Morada** | Lusio | `address_street` + `address_postal_code` + `address_locality` | Concatenar com espaços |
+
+---
+
+### ⚠️ CASOS ESPECIAIS
+
+**Pagamentos não encontrados no Lusio:**
+- Mostrar em lista separada "Pagamentos sem correspondência"
+- Incluir: Data, Valor, Email do Stripe
+
+**Clientes sem pagamento:**
+- Não aparecem no relatório (apenas pagamentos confirmados)
+
+**Múltiplos pagamentos mesmo cliente:**
+- Cada pagamento é uma linha separada no Excel
 
 ---
 

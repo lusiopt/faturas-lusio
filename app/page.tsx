@@ -73,20 +73,30 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            💰 Faturas Lusio
-          </h1>
-          <p className="text-gray-600">
-            Sistema de reconciliação de pagamentos Stripe com clientes Lusio
-          </p>
-        </header>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b sticky top-0 z-40">
+        <div className="px-4 sm:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                💰 Faturas Lusio
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Sistema de reconciliação de pagamentos Stripe com clientes Lusio
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="p-4 sm:p-8">
+        <div className="max-w-6xl mx-auto">
 
         {/* Upload Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">📤 Upload de Arquivos</h2>
+        <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">📤 Upload de Arquivos</h2>
 
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -99,13 +109,16 @@ export default function Home() {
                 onChange={handleStripeFile}
                 className="block w-full text-sm text-gray-500
                   file:mr-4 file:py-2 file:px-4
-                  file:rounded-md file:border-0
+                  file:rounded-lg file:border-0
                   file:text-sm file:font-semibold
-                  file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100"
+                  file:bg-blue-600 file:text-white
+                  hover:file:bg-blue-700
+                  file:cursor-pointer"
               />
               {stripeFile && (
-                <p className="text-xs text-green-600 mt-1">✓ {stripeFile.name}</p>
+                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                  <span>✓</span> {stripeFile.name}
+                </p>
               )}
             </div>
 
@@ -119,13 +132,16 @@ export default function Home() {
                 onChange={handleLusioFile}
                 className="block w-full text-sm text-gray-500
                   file:mr-4 file:py-2 file:px-4
-                  file:rounded-md file:border-0
+                  file:rounded-lg file:border-0
                   file:text-sm file:font-semibold
-                  file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100"
+                  file:bg-blue-600 file:text-white
+                  hover:file:bg-blue-700
+                  file:cursor-pointer"
               />
               {lusioFile && (
-                <p className="text-xs text-green-600 mt-1">✓ {lusioFile.name}</p>
+                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                  <span>✓</span> {lusioFile.name}
+                </p>
               )}
             </div>
           </div>
@@ -133,16 +149,16 @@ export default function Home() {
           <button
             onClick={handleReconcile}
             disabled={!stripeFile || !lusioFile || loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg
               hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed
-              font-medium transition-colors"
+              font-medium transition-colors text-base"
           >
             {loading ? '🔄 Processando...' : '🔄 Reconciliar Pagamentos'}
           </button>
 
           {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-700 text-sm">⚠️ {error}</p>
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm font-medium">⚠️ {error}</p>
             </div>
           )}
         </div>
@@ -152,21 +168,21 @@ export default function Home() {
           <>
             {/* Statistics */}
             <div className="grid md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <p className="text-sm text-gray-600">Total Processados</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                <p className="text-sm font-medium text-gray-600 mb-1">Total Processados</p>
+                <p className="text-3xl font-bold text-gray-900">
                   {result.matched.length + result.unmatched.length}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <p className="text-sm text-gray-600">✅ Correspondidos</p>
-                <p className="text-2xl font-bold text-green-600">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                <p className="text-sm font-medium text-gray-600 mb-1">✅ Correspondidos</p>
+                <p className="text-3xl font-bold text-green-600">
                   {result.matched.length}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <p className="text-sm text-gray-600">⚠️ Não Encontrados</p>
-                <p className="text-2xl font-bold text-orange-600">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                <p className="text-sm font-medium text-gray-600 mb-1">⚠️ Não Encontrados</p>
+                <p className="text-3xl font-bold text-orange-600">
                   {result.unmatched.length}
                 </p>
               </div>
@@ -174,13 +190,13 @@ export default function Home() {
 
             {/* Matched Payments */}
             {result.matched.length > 0 && (
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">✅ Pagamentos Correspondidos</h2>
+              <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden mb-6">
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900">✅ Pagamentos Correspondidos</h2>
                   <button
                     onClick={handleExport}
-                    className="bg-green-600 text-white py-2 px-4 rounded-md
-                      hover:bg-green-700 font-medium transition-colors"
+                    className="bg-green-600 text-white py-2 px-4 rounded-lg
+                      hover:bg-green-700 font-medium transition-colors flex items-center gap-2"
                   >
                     📥 Exportar Excel
                   </button>
@@ -190,25 +206,39 @@ export default function Home() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Taxa</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">NIF</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Morada</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxa</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIF</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Morada</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {result.matched.map((payment, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50">
-                          <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{payment.date}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">€{payment.amount.toFixed(2)}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">€{payment.fee.toFixed(2)}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900">{payment.clientName}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900">{payment.email}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{payment.nif}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900">{payment.address}</td>
+                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{payment.date}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">€{payment.amount.toFixed(2)}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-600">€{payment.fee.toFixed(2)}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{payment.clientName}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-600">{payment.email}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{payment.nif}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-600">{payment.address}</div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -219,26 +249,39 @@ export default function Home() {
 
             {/* Unmatched Payments */}
             {result.unmatched.length > 0 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold mb-4">⚠️ Pagamentos Sem Correspondência</h2>
+              <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900">⚠️ Pagamentos Sem Correspondência</h2>
+                  <p className="text-sm text-gray-500 mt-1">Estes pagamentos não foram encontrados na base de clientes Lusio</p>
+                </div>
 
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment ID</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {result.unmatched.map((payment, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50">
-                          <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{payment.date}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">€{payment.amount.toFixed(2)}</td>
-                          <td className="px-3 py-3 text-sm text-gray-900">{payment.email}</td>
-                          <td className="px-3 py-3 text-sm text-gray-600 font-mono text-xs">{payment.paymentIntentId}</td>
+                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{payment.date}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">€{payment.amount.toFixed(2)}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-600">{payment.email}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded inline-block">
+                              {payment.paymentIntentId}
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -248,6 +291,7 @@ export default function Home() {
             )}
           </>
         )}
+        </div>
       </div>
     </div>
   )

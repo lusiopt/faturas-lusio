@@ -85,7 +85,7 @@ export function parseLusioCSV(csvText: string): LusioClient[] {
     addressStreet: row['address_street'] || '',
     addressPostalCode: row['address_postal_code'] || '',
     addressLocality: row['address_locality'] || '',
-  })).filter(client => client.servicePaymentReferenceId) // Remove empty rows
+  })).filter(client => client.personEmail || client.servicePaymentReferenceId) // Keep rows with email or payment ID
 }
 
 // Reconcile payments with fallback by email

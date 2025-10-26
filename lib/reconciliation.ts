@@ -205,6 +205,25 @@ export function exportToExcel(matchedPayments: MatchedPayment[]) {
       { wch: 40 }, // Morada
     ]
 
+    // Apply currency format (€) to Valor and Taxa Stripe columns
+    // Start from row 4 (index 3) since rows 1-2 are empty and row 3 is header
+    const dataStartRow = 4
+    for (let i = 0; i < payments.length; i++) {
+      const rowNum = dataStartRow + i
+
+      // Format Valor column (B) - €#,##0.00
+      const valorCell = `B${rowNum}`
+      if (ws[valorCell]) {
+        ws[valorCell].z = '€#,##0.00'
+      }
+
+      // Format Taxa Stripe column (C) - €#,##0.00
+      const feeCell = `C${rowNum}`
+      if (ws[feeCell]) {
+        ws[feeCell].z = '€#,##0.00'
+      }
+    }
+
     XLSX.utils.book_append_sheet(wb, ws, monthKey)
   })
 
